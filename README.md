@@ -11,8 +11,8 @@ open android folder in Android Studio
 ## How To Run
 
 1. Install expo-cli - https://docs.expo.io/get-started/installation/
-2. Run 'expo start'
-3. Run 'expo install'
+2. Run 'expo install' 
+3. Run 'expo start'
 4. Open ios folder using xcode
 5. Open android folder using android studio
 
