@@ -2,8 +2,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { AppThunk } from "./store";
 
+export interface PostItem {
+    userId: number;
+    id: number;
+    title: string;
+    body: string;
+};
+
 export interface ListState {
-    list: object[];
+    list: PostItem[];
     loading: boolean;
     errors: string;
 };
@@ -26,7 +33,7 @@ const listSlice = createSlice({
             state.errors = payload;
         },
 
-        setList: (state, { payload }: PayloadAction<object[]>) => {
+        setList: (state, { payload }: PayloadAction<PostItem[]>) => {
             state.list = payload;
         },
     },
@@ -36,7 +43,7 @@ export const { setLoading, setErrors, setList } = listSlice.actions;
 
 export default listSlice.reducer;
 
-export const listSelector = (state: ListState) => state;
+export const listSelector = (state: { listState: ListState }) => state.listState;
 
 export const getList = (): AppThunk => {
     return async (dispatch) => {
@@ -45,8 +52,6 @@ export const getList = (): AppThunk => {
             const res = await axios.get(
                 `https://jsonplaceholder.typicode.com/posts`
             );
-            console.log("meow");
-            // console.log(res.data);
             dispatch(setLoading(false));
             dispatch(setList(res.data));
         } catch (error) {

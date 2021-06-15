@@ -6,32 +6,56 @@ import {
     ListRenderItemInfo,
 } from "react-native";
 import { SearchBar } from 'react-native-elements';
-
-import { listSelector, getList, ListState } from "../../store/listSlice";
+import _ from "lodash";
+import { listSelector, getList, PostItem } from "../../store/listSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { ListItem } from "../../components/molecule";
 
-type ListScreenProps = {}
+import { NavigationScreenProp } from 'react-navigation';
 
-export const List: React.FC<ListScreenProps> = () => {
+type ListScreenProps = {
+    navigation: NavigationScreenProp<any, any>
+}
+
+export const List: React.FC<ListScreenProps> = ({ navigation }) => {
 
     const dispatch = useDispatch();
 
-    const { list, loading, errors }: ListState = useSelector(listSelector);
+    const listState = useSelector(listSelector);
     const [search, setSearch] = useState<string>('');
+    const [searchResults, setSearchResult] = useState<PostItem[]>([]);
 
     useEffect(() => {
         dispatch(getList());
     }, [dispatch]);
 
-    const renderItem = ({ item, index }: ListRenderItemInfo<string>) => {
-        return <View></View>
+    const renderItem = ({ item, index }: ListRenderItemInfo<PostItem>) => {
+        return (
+            <ListItem item={item}
+                onClick={() => {
+                    navigation.navigate(
+                        'list-item',
+                        { item },
+                    );
+                }}
+            />)
     };
 
-    const onChangeInputText = (text: string) => setSearch(text);
+    const onChangeInputText = (text: string) => {
+        setSearch(text);
+
+        const results = _.filter(listState.list, function (item) {
+            return item.title.indexOf(text) > -1;
+        });
+
+        setSearchResult(results);
+    };
+
     const keyExtractor = (item: any, index: number) => index.toString();
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
+
             <SearchBar
                 placeholder="Type Here..."
                 value={search}
@@ -41,9 +65,10 @@ export const List: React.FC<ListScreenProps> = () => {
 
             <FlatList
                 style={{ flex: 1 }}
-                data={list}
+                data={search != "" ? searchResults : listState.list}
                 keyExtractor={keyExtractor}
-                renderItem={renderItem} />
+                renderItem={renderItem}
+            />
 
         </SafeAreaView>
     );

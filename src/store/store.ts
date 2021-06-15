@@ -14,7 +14,7 @@ export type AppThunk = ThunkAction<void, ListState, unknown, Action<string>>;
 
 const store = configureStore({
     reducer: {
-        list: ListSliceReducer
+        listState: ListSliceReducer
     },
     middleware: [ReduxThunk],
 });
